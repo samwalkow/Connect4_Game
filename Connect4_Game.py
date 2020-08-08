@@ -11,7 +11,7 @@ class C4_Player:
 
     #call this method to make a move by asking user a user to enter their choice
     def play_your_move(self):
-        print "player ", self.element, "taking a move"
+        print ("player ", self.element, "taking a move")
         move = input("enter your number: ")
         # if the column is already full, ask user to enter the correct choice
         self.board, placement = add_element(self.board,move,self.element)
@@ -19,7 +19,7 @@ class C4_Player:
             print("please enter correct choice!!!")
             move = input("enter your number: ")
             self.board, placement = add_element(self.board,move,self.element)
-        print board
+        print (board)
         return self.board, move
 
 #defining connect 4 computer bot
@@ -46,11 +46,11 @@ class C4_Bot:
             move = minimax(self.board, self.element, True, self.max_depth, 0)
         self.board, placement = add_element(self.board, move, self.element)
         time_measure = time.time() - time_measure
-        print "\nplayer ", self.element, "taking a move at ", move
+        print ("\nplayer ", self.element, "taking a move at ", move)
         print ("time taken by computer bot is: {}".format(time_measure))
         print ("node explored by computer bot is: {}".format(node_explored))
-        print self.board
-        print "\n\n"
+        print (self.board)
+        print ("\n\n")
         return self.board, move
 
 #get board and game specification from user
@@ -362,7 +362,7 @@ if __name__ == '__main__':
             print("You did not enter correct value, try again")
 
     board = create_board(width,height)
-    print "Welcome to minimax"
+    print ("Welcome to minimax")
 
     #get object of player and bot
     player1 = C4_Player(board,'0')
@@ -370,7 +370,7 @@ if __name__ == '__main__':
 
     #First move of game for computer bot
     board,comp_pos = initial_move(board)
-    print board
+    print (board)
 
     #making second move of player1
     player_1_play = True
@@ -378,16 +378,16 @@ if __name__ == '__main__':
         if player_1_play:
             board, position = player1.play_your_move()
             if check_win(board,player1.element):
-                print "player1 is winner"
+                print ("player1 is winner")
                 break
         else:
             board, position = player_bot.play_your_move()
             if check_win(board,player_bot.element):
-                print "computer bot is winner"
+                print ("computer bot is winner")
                 break
         #if game board is full, no win , then declare a game as draw
         if check_game_status(board):
-            print "game is draw"
+            print ("game is draw")
             break
         # toggle the player to play one on one
         player_1_play = not player_1_play
