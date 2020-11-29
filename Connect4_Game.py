@@ -12,12 +12,12 @@ class C4_Player:
     #call this method to make a move by asking user a user to enter their choice
     def play_your_move(self):
         print ("player ", self.element, "taking a move")
-        move = input("enter your number: ")
+        move = int(input("enter your number: "))
         # if the column is already full, ask user to enter the correct choice
         self.board, placement = add_element(self.board,move,self.element)
         while not placement:
             print("please enter correct choice!!!")
-            move = input("enter your number: ")
+            move = int(input("enter your number: "))
             self.board, placement = add_element(self.board,move,self.element)
         print (board)
         return self.board, move
@@ -78,7 +78,7 @@ def add_element(board, position, element):
     placement = False
     height = board.shape[0]-1
     for i in range(height+1):
-        if(board[height-i,position]=='.'):
+        if board[height-i,position]== b'.':
             board[height-i,position]=element
             current_pos = (height-i,position)
             placement = True
@@ -95,6 +95,11 @@ def initial_move(board):
 #check if given player won the game or not
 def check_win(board,player):
     tile = player
+    if tile == '0':
+        tile = b'0'
+    if tile == 'x':
+        tile = b'x'
+    print("tile:", tile, type(tile))
     rows,cols = np.shape(board)
     rows = rows-1
     result = False
@@ -103,19 +108,19 @@ def check_win(board,player):
         for col in range(cols):
             #check horizontal entries
             try:
-                if board[row][col] == board[row][col+1] == board[row][col+2] == board[row][col+3] == tile:
+                if (board[row][col] == tile and board[row][col+1] == tile and board[row][col+2] == tile and board[row][col+3] == tile):
                     result = True
             except IndexError:
                     pass
             #check vertical entries
             try:
-                if board[row][col] == board[row+1][col]== board[row+2][col] == board[row+3][col] == tile:
+                if (board[row][col] == tile and board[row+1][col] == tile and board[row+2][col] == tile and board[row+3][col] == tile):
                     result = True
             except IndexError:
                     pass
              #check positive diagonal
             try:
-                if board[row][col] == board[row+1][col+1] == board[row+2][col+2] == board[row+3][col+3]== tile:
+                if (board[row][col] == tile and board[row+1][col+1] == tile and board[row+2][col+2] == tile and board[row+3][col+3]== tile):
                     result = True
             except IndexError:
                 pass
@@ -123,7 +128,7 @@ def check_win(board,player):
             try:
                 if col-1<0 or col-2<0 or col-3<0:
                     raise IndexError
-                elif board[row][col] == board[row+1][col-1] == board[row+2][col-2] == board[row+3][col-3]== tile:
+                elif (board[row][col] == tile and board[row+1][col-1] == tile and board[row+2][col-2] == tile and board[row+3][col-3]== tile):
                     result = True
             except IndexError:
                 pass
@@ -131,7 +136,7 @@ def check_win(board,player):
 
 #check if game is complete or not
 def check_game_status(board):
-    if '.' in board:
+    if b'.' in board:
         return False
     else:
         return True
@@ -353,7 +358,7 @@ if __name__ == '__main__':
     choice = 0
     search_level = 3
     print("Default setting has board width = 7, height = 5, minimax with alpha beta, and search_depth is 3")
-    select = raw_input("Use default setting? y/n: ")
+    select = input("Use default setting? y/n: ")
     # If user has not selected then ask user to enter game specification
     if select != 'y':
         width, height, choice, search_level = get_user_input()
@@ -369,7 +374,12 @@ if __name__ == '__main__':
     player_bot = C4_Bot(board, 'x',search_level,choice)
 
     #First move of game for computer bot
+
+    # first_move = input("who should play first? AI or Human?")
+    # if first_move == "AI":
     board,comp_pos = initial_move(board)
+    # if fist_move == "Human":
+    #     board,
     print (board)
 
     #making second move of player1
