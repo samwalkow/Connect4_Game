@@ -84,6 +84,8 @@ def add_element(board, position, element):
             current_pos = (height-i,position)
             placement = True
             break
+    # print(board)
+    # print()
     return board,placement
 
 # make the very first move during start of the game for computer
@@ -328,7 +330,6 @@ def minimax(board_copy, element, index_req, max_depth, depth):
     for i in range(board.shape[1]):
         node = np.copy(board_copy)
         node, placement = add_element(node,i,element)
-        print(node)
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -336,8 +337,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         value = minimax(node,nxt_element,False,max_depth, depth+1)
         node_value.append(value)
         node_index.append(i)
-        print(node)
-        #print(node_value, node_index)
+        #print(node_value, node_index, node)
 
     #if its computer bot then return maximum value of explored node else minimum value
     if element == 'x':
@@ -346,7 +346,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         final_value = min(node_value)
 
     if index_req:
-        print ("player bot utility: ", node_value, node)
+        print ("player bot utility: ", node_value)
         return node_index[node_value.index(final_value)]
     else:
         return final_value
@@ -400,7 +400,7 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
                 node_index = i
             if v >= beta:
                 if index_req:
-                    print ("player bot utility: ", node_value)
+                    print ("player bot utility, v is greater than beta: ", node_value, node)
                     return node_index
                 else:
                     return v
@@ -411,13 +411,13 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
                 node_index = i
             if v <= alpha:
                 if index_req:
-                    print ("player bot utility: ", node_value)
+                    print ("player bot utility, v is less than alpha: ", node_value, node)
                     return node_index
                 else:
                     return v
             beta = min(beta, v)
     if index_req:
-        print ("player bot utility: ", node_value)
+        print ("player bot utility, at index: ", node_value, node)
         return node_index
     else:
         return v
