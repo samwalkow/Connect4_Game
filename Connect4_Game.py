@@ -41,7 +41,7 @@ class C4_Bot:
         if self.alpha_beta:
             alpha = -100000
             beta = 100000
-            move = minimax_apha_beta_pruning(self.board, self.element, alpha, beta, True, self.max_depth, 0)
+            move = minimax_apha_beta_pruning(self.board, self.element, alpha, beta, True, self.max_depth, 0, game_verison)
         else:
             move = minimax(self.board, self.element, True, self.max_depth, 0)
         self.board, placement = add_element(self.board, move, self.element)
@@ -55,11 +55,12 @@ class C4_Bot:
 
 #get board and game specification from user
 def get_user_input():
-    width = input("enter board width from 1 to 10:\n")
-    height = input("enter board height from 1 to 10:\n")
+    width = int(input("enter board width from 1 to 10:\n"))
+    height = int(input("enter board height from 1 to 10:\n"))
+    game_version = int(input("enter what level of game: \n"))
     choice=input("for minimax enter: 0 and for AlphaBeta pruning enter: 1\n")
     search_level = input("enter the level of depth (<10): ")
-    return width, height, choice, search_level
+    return width, height, choice, search_level, game_version
 
 #creat a board of specific width and height. empty cells are marked with dot '.'
 def create_board(width, height):
@@ -93,46 +94,117 @@ def initial_move(board):
     return board,(height-1,width)
 
 #check if given player won the game or not
-def check_win(board,player):
+def check_win(board,player,game_version):
     tile = player
     if tile == '0':
         tile = b'0'
     if tile == 'x':
         tile = b'x'
-    print("tile:", tile, type(tile))
     rows,cols = np.shape(board)
-    rows = rows-1
-    result = False
-    #check if vertical, horizontal or diagonal four elements are same. If same declare a win
-    for row in range(rows):
-        for col in range(cols):
-            #check horizontal entries
-            try:
-                if (board[row][col] == tile and board[row][col+1] == tile and board[row][col+2] == tile and board[row][col+3] == tile):
-                    result = True
-            except IndexError:
+
+    if game_version >= 4:
+        rows = rows-1
+        result = False
+        #check if vertical, horizontal or diagonal four elements are same. If same declare a win
+        for row in range(rows):
+            for col in range(cols):
+                #check horizontal entries
+                try:
+                    if (board[row][col] == tile and board[row][col+1] == tile and board[row][col+2] == tile and board[row][col+3] == tile):
+                        result = True
+                except IndexError:
+                        pass
+                #check vertical entries
+                try:
+                    if (board[row][col] == tile and board[row+1][col] == tile and board[row+2][col] == tile and board[row+3][col] == tile):
+                        result = True
+                except IndexError:
+                        pass
+                #check positive diagonal
+                try:
+                    if (board[row][col] == tile and board[row+1][col+1] == tile and board[row+2][col+2] == tile and board[row+3][col+3]== tile):
+                        result = True
+                except IndexError:
                     pass
-            #check vertical entries
-            try:
-                if (board[row][col] == tile and board[row+1][col] == tile and board[row+2][col] == tile and board[row+3][col] == tile):
-                    result = True
-            except IndexError:
+                #check negative diagonal
+                try:
+                    if col-1<0 or col-2<0 or col-3<0:
+                        raise IndexError
+                    elif (board[row][col] == tile and board[row+1][col-1] == tile and board[row+2][col-2] == tile and board[row+3][col-3]== tile):
+                        result = True
+                except IndexError:
                     pass
-             #check positive diagonal
-            try:
-                if (board[row][col] == tile and board[row+1][col+1] == tile and board[row+2][col+2] == tile and board[row+3][col+3]== tile):
-                    result = True
-            except IndexError:
-                pass
-            #check negative diagonal
-            try:
-                if col-1<0 or col-2<0 or col-3<0:
-                    raise IndexError
-                elif (board[row][col] == tile and board[row+1][col-1] == tile and board[row+2][col-2] == tile and board[row+3][col-3]== tile):
-                    result = True
-            except IndexError:
-                pass
-    return result
+        return result
+
+    if game_verison ==3:
+        rows = rows-1
+        result = False
+        #check if vertical, horizontal or diagonal four elements are same. If same declare a win
+        for row in range(1, rows):
+            for col in range(cols):
+                #check horizontal entries
+                try:
+                    if (board[row][col] == tile and board[row][col+1] == tile and board[row][col+2] == tile):
+                        result = True
+                except IndexError:
+                    pass
+                #check vertical entries
+                try:
+                    if (board[row][col] == tile and board[row+1][col] == tile and board[row+2][col] == tile):
+                        result = True
+                except IndexError:
+                    pass
+                #check positive diagonal
+                try:
+                    if (board[row][col] == tile and board[row+1][col+1] == tile and board[row+2][col+2] == tile):
+                        result = True
+                except IndexError:
+                    pass
+                #check negative diagonal
+                try:
+                    if col-1 < 0 or col-2 < 0 or col-3 < 0:
+                        raise IndexError
+                    elif (board[row][col] == tile and board[row+1][col-1] == tile and board[row+2][col-2] == tile):
+                        result = True
+                except IndexError:
+                    pass
+
+        return result
+
+    if game_version == 2:
+        rows = rows-1
+        result = False
+        #check if vertical, horizontal or diagonal four elements are same. If same declare a win
+        for row in range(1, rows):
+            for col in range(cols):
+                #check horizontal entries
+                try:
+                    if (board[row][col] == tile and board[row][col+1] == tile):
+                        result = True
+                except IndexError:
+                    pass
+                #check vertical entries
+                try:
+                    if (board[row][col] == tile and board[row+1][col] == tile):
+                        result = True
+                except IndexError:
+                    pass
+                #check positive diagonal
+                try:
+                    if (board[row][col] == tile and board[row+1][col+1] == tile):
+                        result = True
+                except IndexError:
+                    pass
+                #check negative diagonal
+                try:
+                    if col-1 < 0 or col-2 < 0 or col-3 < 0:
+                        raise IndexError
+                    elif (board[row][col] == tile and board[row+1][col-1] == tile):
+                        result = True
+                except IndexError:
+                    pass
+
+        return result
 
 #check if game is complete or not
 def check_game_status(board):
@@ -263,6 +335,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         value = minimax(node,nxt_element,False,max_depth, depth+1)
         node_value.append(value)
         node_index.append(i)
+        #print(node_value, node_index)
 
     #if its computer bot then return maximum value of explored node else minimum value
     if element == 'x':
@@ -277,20 +350,20 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         return final_value
 
 #minimax algorithm with alpha beta pruning for computer bot player
-def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_depth, depth):
+def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_depth, depth, game_verison):
     global node_explored
     #increment node every time child is created
     node_explored += 1
     #if game is complete and one of player wins then return large utility value
     if check_game_status(board_copy):
-        if check_win(board_copy,'x'):
-            return 100000*(max_depth-depth)
-        elif check_win(board_copy,'0'):
-            return -100000*(max_depth-depth)
+        if check_win(board_copy,'x', game_verison):
+            return 100000*(float(max_depth)-float(depth))
+        elif check_win(board_copy,'0', game_verison):
+            return -100000*(float(max_depth)-float(depth))
         else:
             return 0
     #when reaches the maximum depth return heuristic value
-    if depth>max_depth:
+    if int(depth)>int(max_depth):
         return eval_function(board_copy)
 
     node_value = []
@@ -315,7 +388,7 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
         if not placement:
             continue
         #recursive call of minimax function
-        value = minimax_apha_beta_pruning(node,nxt_element,alpha, beta, False,max_depth, depth+1)
+        value = minimax_apha_beta_pruning(node,nxt_element,alpha, beta, False,max_depth, depth+1, game_verison)
         if index_req:
             node_value.append(value)
         #determine the min and max turn and find v, alpha and beta
@@ -357,17 +430,19 @@ if __name__ == '__main__':
     height = 5
     choice = 0
     search_level = 3
+    game_verison = 4
     print("Default setting has board width = 7, height = 5, minimax with alpha beta, and search_depth is 3")
     select = input("Use default setting? y/n: ")
     # If user has not selected then ask user to enter game specification
     if select != 'y':
-        width, height, choice, search_level = get_user_input()
+        width, height, choice, search_level, game_verison = get_user_input()
         # width, height, choice, search_level = 10, 5, 0
         if width>10 or width<1 or height>10 or height<1:
             print("You did not enter correct value, try again")
 
     board = create_board(width,height)
     print ("Welcome to minimax")
+    print()
 
     #get object of player and bot
     player1 = C4_Player(board,'0')
@@ -387,17 +462,20 @@ if __name__ == '__main__':
     while True:
         if player_1_play:
             board, position = player1.play_your_move()
-            if check_win(board,player1.element):
+            if check_win(board,player1.element, game_verison):
                 print ("player1 is winner")
+                print()
                 break
         else:
             board, position = player_bot.play_your_move()
-            if check_win(board,player_bot.element):
+            if check_win(board,player_bot.element, game_verison):
                 print ("computer bot is winner")
+                print()
                 break
         #if game board is full, no win , then declare a game as draw
         if check_game_status(board):
             print ("game is draw")
+            print()
             break
         # toggle the player to play one on one
         player_1_play = not player_1_play
