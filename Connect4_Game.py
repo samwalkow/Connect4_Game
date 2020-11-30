@@ -96,8 +96,8 @@ def initial_move(board):
 #check if given player won the game or not
 def check_win(board,player,game_version):
     tile = player
-    if tile == '0':
-        tile = b'0'
+    if tile == 'o':
+        tile = b'o'
     if tile == 'x':
         tile = b'x'
     rows,cols = np.shape(board)
@@ -140,7 +140,7 @@ def check_win(board,player,game_version):
         rows = rows-1
         result = False
         #check if vertical, horizontal or diagonal four elements are same. If same declare a win
-        for row in range(1, rows):
+        for row in range(rows):
             for col in range(cols):
                 #check horizontal entries
                 try:
@@ -175,7 +175,7 @@ def check_win(board,player,game_version):
         rows = rows-1
         result = False
         #check if vertical, horizontal or diagonal four elements are same. If same declare a win
-        for row in range(1, rows):
+        for row in range(rows):
             for col in range(cols):
                 #check horizontal entries
                 try:
@@ -219,20 +219,20 @@ def eval_function(board):
     rows,cols = np.shape(board)
     rows = rows-1
     computer = 'x'
-    player = '0'
+    player = 'o'
     for row in range(rows):
         for col in range(cols):
             #check horizontal entries and assigns value to heuristic
             try:
-                if board[row][col] == board[row][col+1] == '0':
+                if board[row][col] == board[row][col+1] == 'o':
                     heur -=10
                 if board[row][col] == board[row][col+1] == 'x':
                     heur +=10
-                if board[row][col] == board[row][col+1] == board[row][col+2] =='0':
+                if board[row][col] == board[row][col+1] == board[row][col+2] =='o':
                     heur -=100
                 if board[row][col] == board[row][col+1] == board[row][col+2] =='x':
                     heur +=100
-                if board[row][col] == board[row][col+1] == board[row][col+2] == board[row][col+3] =='0':
+                if board[row][col] == board[row][col+1] == board[row][col+2] == board[row][col+3] =='o':
                     heur -=10000
                 if board[row][col] == board[row][col+1] == board[row][col+2] == board[row][col+3] =='x':
                     heur +=10000
@@ -240,15 +240,15 @@ def eval_function(board):
                     pass
 #             #check vertical entries and assigns value to heuristic
             try:
-                if board[row][col] == board[row+1][col] =='0':
+                if board[row][col] == board[row+1][col] =='o':
                     heur -=10
                 if board[row][col] == board[row+1][col] =='x':
                     heur +=10
-                if board[row][col] == board[row+1][col] == board[row+2][col] =='0':
+                if board[row][col] == board[row+1][col] == board[row+2][col] =='o':
                     heur -=100
                 if board[row][col] == board[row+1][col] == board[row+2][col] =='x':
                     heur +=100
-                if board[row][col] == board[row+1][col]== board[row+2][col] == board[row+3][col] =='0':
+                if board[row][col] == board[row+1][col]== board[row+2][col] == board[row+3][col] =='o':
                     heur -=10000
                 if board[row][col] == board[row+1][col]== board[row+2][col] == board[row+3][col] =='x':
                     heur +=10000
@@ -256,15 +256,15 @@ def eval_function(board):
                     pass
 #             #check positive diagonal and assigns value to heuristic
             try:
-                if board[row][col] == board[row+1][col+1] =='0':
+                if board[row][col] == board[row+1][col+1] =='o':
                     heur -=10
                 if board[row][col] == board[row+1][col+1] =='x':
                     heur +=10
-                if board[row][col] == board[row+1][col+1] == board[row+2][col+2] =='0':
+                if board[row][col] == board[row+1][col+1] == board[row+2][col+2] =='o':
                     heur -=100
                 if board[row][col] == board[row+1][col+1] == board[row+2][col+2] =='x':
                     heur +=100
-                if board[row][col] == board[row+1][col+1] == board[row+2][col+2] == board[row+3][col+3] =='0':
+                if board[row][col] == board[row+1][col+1] == board[row+2][col+2] == board[row+3][col+3] =='o':
                     heur -=10000
                 if board[row][col] == board[row+1][col+1] == board[row+2][col+2] == board[row+3][col+3] =='x':
                     heur +=10000
@@ -276,21 +276,21 @@ def eval_function(board):
                 if col-1<0:
                     raise IndexError
                 else:
-                    if board[row][col] == board[row+1][col-1] == '0':
+                    if board[row][col] == board[row+1][col-1] == 'o':
                         heur -=10
                     if board[row][col] == board[row+1][col-1] == 'x':
                         heur +=10
                 if col-1<0 or col-2<0:
                     raise IndexError
                 else:
-                    if board[row][col] == board[row+1][col-1] == board[row+2][col-2] == '0':
+                    if board[row][col] == board[row+1][col-1] == board[row+2][col-2] == 'o':
                         heur -=100
                     if board[row][col] == board[row+1][col-1] == board[row+2][col-2] == 'x':
                         heur +=100
                 if col-1<0 or col-2<0 or col-3<0:
                     raise IndexError
                 else:
-                    if board[row][col] == board[row+1][col-1] == board[row+2][col-2] == board[row+3][col-3] == '0':
+                    if board[row][col] == board[row+1][col-1] == board[row+2][col-2] == board[row+3][col-3] == 'o':
                         heur -=10000
                     if board[row][col] == board[row+1][col-1] == board[row+2][col-2] == board[row+3][col-3] == 'x':
                         heur +=10000
@@ -307,7 +307,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
     if check_game_status(board_copy):
         if check_win(board_copy,'x'):
             return 100000*(max_depth-depth)
-        elif check_win(board_copy,'0'):
+        elif check_win(board_copy,'o'):
             return -100000*(max_depth-depth)
         else:
             return 0
@@ -321,13 +321,14 @@ def minimax(board_copy, element, index_req, max_depth, depth):
 
     #switching to the elements every time
     if element == 'x':
-        nxt_element = '0'
+        nxt_element = 'o'
     else:
         nxt_element = 'x'
 
     for i in range(board.shape[1]):
         node = np.copy(board_copy)
         node, placement = add_element(node,i,element)
+        print(node)
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -335,6 +336,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         value = minimax(node,nxt_element,False,max_depth, depth+1)
         node_value.append(value)
         node_index.append(i)
+        print(node)
         #print(node_value, node_index)
 
     #if its computer bot then return maximum value of explored node else minimum value
@@ -344,7 +346,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         final_value = min(node_value)
 
     if index_req:
-        print ("player bot utility: ", node_value)
+        print ("player bot utility: ", node_value, node)
         return node_index[node_value.index(final_value)]
     else:
         return final_value
@@ -358,7 +360,7 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
     if check_game_status(board_copy):
         if check_win(board_copy,'x', game_verison):
             return 100000*(float(max_depth)-float(depth))
-        elif check_win(board_copy,'0', game_verison):
+        elif check_win(board_copy,'o', game_verison):
             return -100000*(float(max_depth)-float(depth))
         else:
             return 0
@@ -377,7 +379,7 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
 
     #switching to the elements
     if element == 'x':
-        nxt_element = '0'
+        nxt_element = 'o'
     else:
         nxt_element = 'x'
 
@@ -445,16 +447,16 @@ if __name__ == '__main__':
     print()
 
     #get object of player and bot
-    player1 = C4_Player(board,'0')
+    player1 = C4_Player(board,'o')
     player_bot = C4_Bot(board, 'x',search_level,choice)
 
     #First move of game for computer bot
 
-    # first_move = input("who should play first? AI or Human?")
-    # if first_move == "AI":
-    board,comp_pos = initial_move(board)
-    # if fist_move == "Human":
-    #     board,
+    first_move = input("who should play first? AI or Human? ")
+    if first_move == "AI":
+        board,comp_pos = initial_move(board)
+    if first_move == "Human":
+        player_1_play = True
     print (board)
 
     #making second move of player1
