@@ -53,10 +53,12 @@ class C4_Bot:
         print()
         print ("number of nodes explored by computer bot is: {}".format(node_explored))
         print()
-        for row in node_print:
-            print("node explored by computer bot:\n", row)
+        show_nodes = input("Show the game tree? y/n: ")
+        if show_nodes == 'y':
+            for row in node_print:
+                print("node explored by computer bot:\n", row)
         print()
-        print (self.board)
+        print ("Game board:\n", self.board)
         print ("\n\n")
         return self.board, move
 
