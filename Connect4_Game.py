@@ -34,6 +34,7 @@ class C4_Bot:
     #call this method to make a move which will calculate heuristic and decides the move
     def play_your_move(self):
         global node_explored
+        global node_print
         node_explored = 0
         time_measure = 0
         #measure time take to decide a move
@@ -47,8 +48,14 @@ class C4_Bot:
         self.board, placement = add_element(self.board, move, self.element)
         time_measure = time.time() - time_measure
         print ("\nplayer ", self.element, "taking a move at ", move)
+        print()
         print ("time taken by computer bot is: {}".format(time_measure))
-        print ("node explored by computer bot is: {}".format(node_explored))
+        print()
+        print ("number of nodes explored by computer bot is: {}".format(node_explored))
+        print()
+        for row in node_print:
+            print("node explored by computer bot:\n", row)
+        print()
         print (self.board)
         print ("\n\n")
         return self.board, move
@@ -303,6 +310,7 @@ def eval_function(board):
 #minimax algorithm for computer bot player
 def minimax(board_copy, element, index_req, max_depth, depth):
     global node_explored
+    global node_print
     #increment node every time child is created
     node_explored += 1
     #if game is complete and one of player wins then return large utility value
@@ -330,6 +338,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
     for i in range(board.shape[1]):
         node = np.copy(board_copy)
         node, placement = add_element(node,i,element)
+        node_print.append(node)
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -337,16 +346,14 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         value = minimax(node,nxt_element,False,max_depth, depth+1)
         node_value.append(value)
         node_index.append(i)
-        #print(node_value, node_index, node)
 
     #if its computer bot then return maximum value of explored node else minimum value
     if element == 'x':
         final_value = max(node_value)
     else:
         final_value = min(node_value)
-
     if index_req:
-        print ("player bot utility: ", node_value)
+        #print ("player bot utility: ", node_value)
         return node_index[node_value.index(final_value)]
     else:
         return final_value
@@ -354,6 +361,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
 #minimax algorithm with alpha beta pruning for computer bot player
 def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_depth, depth, game_verison):
     global node_explored
+    global node_print
     #increment node every time child is created
     node_explored += 1
     #if game is complete and one of player wins then return large utility value
@@ -386,6 +394,7 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
     for i in range(board.shape[1]):
         node = np.copy(board_copy)
         node, placement = add_element(node,i,element)
+        node_print.append(node)
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -400,7 +409,7 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
                 node_index = i
             if v >= beta:
                 if index_req:
-                    print ("player bot utility, v is greater than beta: ", node_value, node)
+                    print ("player bot utility, v is greater than beta: ", node_value)
                     return node_index
                 else:
                     return v
@@ -411,13 +420,13 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
                 node_index = i
             if v <= alpha:
                 if index_req:
-                    print ("player bot utility, v is less than alpha: ", node_value, node)
+                    print ("player bot utility, v is less than alpha: ", node_value)
                     return node_index
                 else:
                     return v
             beta = min(beta, v)
     if index_req:
-        print ("player bot utility, at index: ", node_value, node)
+        #print ("player bot utility, at index: ", node_value)
         return node_index
     else:
         return v
@@ -427,6 +436,7 @@ if __name__ == '__main__':
     #global variable to count number of node expanded
     global node_explored
     node_explored = 0
+    node_print = []
     #default value for default board setting
     width = 7
     height = 5
