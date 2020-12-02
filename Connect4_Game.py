@@ -38,8 +38,9 @@ class C4_Bot:
         global player_human
         node_explored = 0
         time_measure = 0
-        bot_wins = 0
-        human_wins = 0
+        bot_node_wins = 0
+        human_node_wins = 0
+        draw_node_wins = 0
         time_measure = time.time()
         if self.alpha_beta:
             alpha = -100000
@@ -59,25 +60,30 @@ class C4_Bot:
         if show_nodes == 'y':
             for node in node_print:
                 node_level = 0
+                print("node explored by computer bot:\n", node)
+                for row in node[:-1]:
+                    for item in row:
+                        if item != b'.':
+                            node_level +=1
+                print("depth level:", node_level)
                 if not check_game_status(node):
-                    print("node explored by computer bot:\n", node)
-                    for row in node[:-1]:
-                        for item in row:
-                            if item != b'.':
-                                node_level +=1
-                    print("depth level:", node_level)
                     if check_win(node, self.element, game_verison):
                         print("Outome: Winning Node - bot wins!")
-                        bot_wins += 1
+                        bot_node_wins += 1
                     if check_win(node, player_human.element, game_verison):
                         print("Outcome: Losing Node - human wins")
-                        human_wins += 1
+                        human_node_wins += 1
                     if not check_win(node, self.element, game_verison) and not check_win(node, player_human.element, game_verison):
                         print("Outcome: Unknown - game in progress")
-                else:
-                    print("Outcome: A draw - no one wins")
                     print()
-            
+                if check_game_status(node) and not check_win(node, self.element, game_verison) and not check_win(node, self.element, game_verison):
+                    print("Outcome: a draw - no one wins")
+                    draw_node_wins += 1
+                    print()
+        print()
+        print("Bot wins: ", bot_node_wins)
+        print("Human wins: ", human_node_wins)
+        print("Number of draws:", draw_node_wins)
         print()
         print ("Game board:\n", self.board)
         print ("\n\n")
