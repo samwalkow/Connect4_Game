@@ -1,6 +1,7 @@
 import numpy as np
 import operator
 import time
+import random
 
 #defining connect 4 player1
 class C4_Player:
@@ -59,34 +60,36 @@ class C4_Bot:
         show_nodes = input("Show the game tree? y/n: ")
         if show_nodes == 'y':
             for node in node_print:
-                node_level = 0
-                print("node explored by computer bot:\n", node)
-                for row in node[:-1]:
-                    for item in row:
-                        if item != b'.':
-                            node_level +=1
-                print("depth level:", node_level)
-                if not check_game_status(node):
-                    if check_win(node, self.element, game_verison):
+                if not check_game_status(node[1]):
+                    if check_win(node[1], self.element, game_verison):
+                        print("node explored by computer bot:\n", node[1])
+                        print("depth level:", node[0])
                         print("Outome: Winning Node - bot wins!")
                         bot_node_wins += 1
-                    if check_win(node, player_human.element, game_verison):
+                    if check_win(node[1], player_human.element, game_verison):
+                        print("node explored by computer bot:\n", node[1])
+                        print("depth level:", node[0])
                         print("Outcome: Losing Node - human wins")
                         human_node_wins += 1
-                    if not check_win(node, self.element, game_verison) and not check_win(node, player_human.element, game_verison):
+                    if not check_win(node[1], self.element, game_verison) and not check_win(node[1], player_human.element, game_verison):
+                        print("node explored by computer bot:\n", node[1])
+                        print("depth level:", node[0])
                         print("Outcome: Unknown - game in progress")
                     print()
-                if check_game_status(node) and not check_win(node, self.element, game_verison) and not check_win(node, self.element, game_verison):
+                if check_game_status(node[1]) and not check_win(node[1], self.element, game_verison) and not check_win(node[1], player_human, game_verison):
+                    print("node explored by computer bot:\n", node[1])
+                    print("depth level:", node[0])
                     print("Outcome: a draw - no one wins")
                     draw_node_wins += 1
                     print()
+    
+        print()
+        print("Game board:\n", self.board)
         print()
         print("Bot wins: ", bot_node_wins)
         print("Human wins: ", human_node_wins)
         print("Number of draws:", draw_node_wins)
-        print()
-        print ("Game board:\n", self.board)
-        print ("\n\n")
+        print("weakly solved: \n", winning_strategy(node_print, game_verison, game_verison))
         return self.board, move
 
 
@@ -604,9 +607,15 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         nxt_element = 'x'
 
     for i in range(board.shape[1]):
+        node_count = 0
         node = np.copy(board_copy)
-        node, placement = add_element(node,i,element)
-        node_print.append(node)
+        node, placement = add_element(node, i, element)
+        for row in node[:2]:
+            for item in row:
+                if item != b'.':
+                    node_count += 1
+        node_print.append([node_count, node])
+        
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -661,9 +670,14 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
         nxt_element = 'x'
 
     for i in range(board.shape[1]):
+        node_count = 0
         node = np.copy(board_copy)
         node, placement = add_element(node,i,element)
-        node_print.append(node)
+        for row in node[:2]:
+            for item in row:
+                if item != b'.':
+                    node_count += 1
+        node_print.append([node_count, node])
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -699,6 +713,35 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
         return node_index
     else:
         return v
+
+def winning_strategy(branch:list, width:int, height:int):
+    board_str = ""
+    winning_str = ""
+    winning_moves = []
+    board = create_board(width, height)
+    if width == 2 and height == 2:
+        winning_move_1 = add_element(board, 1, 'x')[0]
+        winning_move_2 = add_element(board, 0, 'o')[0]
+        winning_move_3 = add_element(board, 0, 'x')[0]
+        winning_moves = winning_move_3
+    if width == 3 and height == 3:
+        winning_move_1 = add_element(board, 1, 'x')[0]
+        winning_move_2 = add_element(board, 1, 'o')[0]
+        winning_move_3 = add_element(board, 1, 'x')[0]
+        winning_moves = winning_move_3
+    for row in winning_moves:
+        for item in row:
+            winning_str += str(item)
+    for leaf_node in branch:
+        leaf = leaf_node[1]
+        board_str = ""
+        for rows in leaf:
+            for items in rows:
+                board_str += str(items)
+        if board_str == winning_str:
+            return leaf
+        else:
+            return "not solved"
 
 # main
 if __name__ == '__main__':
@@ -736,6 +779,7 @@ if __name__ == '__main__':
     first_move = input("who should play first? AI or Human? ")
     if first_move == "AI":
         board,comp_pos = initial_move(board)
+        #node_print.append([1, board])
         # node_level = 2
     if first_move == "Human":
         player_human_play = True
@@ -764,4 +808,5 @@ if __name__ == '__main__':
             break
         # toggle the player to play one on one
         player_human_play = not player_human_play
+    #print(winning_strategy(node_print, width, height))
     print ("thanks for playing")
