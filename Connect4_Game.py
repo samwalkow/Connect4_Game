@@ -66,86 +66,66 @@ class C4_Bot:
         #     print(nodes)
         show_nodes = input("Show the game tree? y/n: ")
         if show_nodes == 'y':
+            winning_boards = []
             bot_node_wins = 0
             human_node_wins = 0
             draw_node_wins = 0
-            for node in node_print.items():
-                if node[1][1] == 5:
+            for node in node_print:
+                if node[1] == 5:
                     level5.append(node)
-                if node[1][1] == 4:
+                if node[1] == 4:
                     level4.append(node)
-                if node[1][1] == 3:
+                if node[1] == 3:
                     level3.append(node)
-                if node[1][1] == 2:
+                if node[1] == 2:
                     level2.append(node)
-                if node[1][1] == 1:
+                if node[1] == 1:
                     level1.append(node)
-                if not check_game_status(node[1][0]):                                
-                    if check_win(node[1][0], self.element, game_verison):
-                        print("node explored by computer bot:\n", node[1][0])
-                        print("depth level:", node[1][1])
+                if not check_game_status(node[0]):                               
+                    if check_win(node[0], self.element, game_verison):
+                        print("node explored by computer bot:\n", node[0])
+                        print("depth level:", node[1])
                         print("Outome: Winning Node - bot wins!")
+                        winning_boards.append(node)
                         bot_node_wins += 1
-                    if check_win(node[1][0], player_human.element, game_verison):
-                        print("node explored by computer bot:\n", node[1][0])
-                        print("depth level:", node[1][0])
+                    if check_win(node[0], player_human.element, game_verison):
+                        print("node explored by computer bot:\n", node[0])
+                        print("depth level:", node[1])
                         print("Outcome: Losing Node - human wins")
                         human_node_wins += 1
-                    if not check_win(node[1][0], self.element, game_verison) and not check_win(node[1][0], player_human.element, game_verison):
-                        print("node explored by computer bot:\n", node[1][0])
-                        print("depth level:", node[1][1])
+                    if not check_win(node[0], self.element, game_verison) and not check_win(node[0], player_human.element, game_verison):
+                        print("node explored by computer bot:\n", node[0])
+                        print("depth level:", node[1])
                         print("Outcome: Unknown - game in progress")
                     print()
-                if check_game_status(node[1][0]) and not check_win(node[1][0], self.element, game_verison) and not check_win(node[1][0], player_human, game_verison):
-                    print("node explored by computer bot:\n", node[1][0])
-                    print("depth level:", node[1][1])
+                if check_game_status(node[0]) and not check_win(node[0], self.element, game_verison) and not check_win(node[0], player_human, game_verison):
+                    print("node explored by computer bot:\n", node[0])
+                    print("depth level:", node[1])
                     print("Outcome: a draw - no one wins")
                     draw_node_wins += 1
                     print()
-            print("Bot wins: ", bot_node_wins)
-            print("Human wins: ", human_node_wins)
-            print("Number of draws:", draw_node_wins)
-            print("Root: ", level1)
-            print("Second Level: ", level2)
-            print("Third Level: ", level3)
-            print("Fourth Level: ", level4)
-            print("Final Nodes: ", level5)
+            # print("Bot wins: ", bot_node_wins)
+            # print("Human wins: ", human_node_wins)
+            # print("Number of draws:", draw_node_wins)
+            # print("Root: ", level1)
+            # print("Second Level: ", level2)
+            # print("Third Level: ", level3)
+            # print("Fourth level: ", level4)
+            # print("Final Nodes: ", level5)
+            for n in winning_boards:
+                
+                for nn in node_print:
+                    
+                    if n[1] == nn[1]-1:
+                        print("parent: ", n, "child ", nn)
+                    else:
+                        print("no parent")
 
     
         print()
         print("Game board:\n", self.board)
         print()
         return self.board, move
-
-
-def winning_strategy(branch: list, width: int, height: int, node_level: int):
-    total_moves = height*width
-    minimum_moves = height+2 - node_level
-    if total_moves == 4:
-        AI_percentage = 100.0
-        #weakly_solved = print("Chances of a win with that move: ", AI_percentage, "%")
-        return "Moves left to an AI win: ", minimum_moves, "%"
-    if total_moves == 9:
-        for leaf in branch:
-            center_col = leaf[1][2][1]
-            if center_col != b'.':
-                AI_percentage += 10
-                minimum_moves = minimum_moves
-                return "Chances of a win with that move: ",  AI_percentage, "moves left to win: ", minimum_moves
-
-# http://kmkeen.com/python-trees/
-def children(token, tree):
-    "returns a list of every child"
-    child_list = []
-    to_crawl = deque([token])
-    while to_crawl:
-        current = to_crawl.popleft()
-        print(current)
-        child_list.append(current)
-        print(child_list)
-        node_children = tree[current]
-        to_crawl.extend(node_children)
-    return child_list
 
 
 #get board and game specification from user
@@ -701,8 +681,6 @@ def minimax(board_copy, element, index_req, max_depth, depth):
         nxt_element = 'x'
 
     for i in range(board.shape[1]):
-        #previous_node = create_key(tree[-1].values())
-        tree_node = {}
         node_count = 0
         node_copy = np.copy(board_copy)
         node, placement = add_element(node_copy, i, element)
@@ -711,9 +689,7 @@ def minimax(board_copy, element, index_req, max_depth, depth):
             for item in row:
                 if (item == b'x') or (item == b'o'):
                     node_count += 1
-        node_print[node_key] = [node, node_count]
-        # tree_node[previous_node] = node
-        # tree.append(tree_node)
+        node_print.append(node, node_count)
         
         #don't do recursive call if there is no placement of element
         if not placement:
@@ -770,19 +746,16 @@ def minimax_apha_beta_pruning(board_copy, element, alpha, beta, index_req, max_d
         nxt_element = 'x'
 
     for i in range(board.shape[1]):
-       # previous_node = create_key(tree[-1].values())
-        tree_node = {}
         node_count = 0
         node_copy = np.copy(board_copy)
         node, placement = add_element(node_copy, i, element)
-        node_key = create_key(node)
+        #node_key = create_key(node)
         for row in node:
             for item in row:
                 if (item == b'x') or (item == b'o'):
                     node_count += 1
-        node_print[node_key] = [node, node_count]
-        # tree_node[previous_node] = node
-        # tree.append(tree_node)
+        node_print.append([node, node_count])
+       
         #don't do recursive call if there is no placement of element
         if not placement:
             continue
@@ -827,8 +800,7 @@ if __name__ == '__main__':
     global player_human
     node_explored = 0
     node_level = int()
-    node_print = {}
-    tree = []
+    node_print = []
     #default value for default board setting
     width = 7
     height = 5
